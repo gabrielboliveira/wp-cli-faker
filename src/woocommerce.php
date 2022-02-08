@@ -111,6 +111,8 @@ class WooCommerce {
 			}
 		);
 
+		error_log( __METHOD__ . ':' . __LINE__ .') : '. print_r( $product_ids, true ) );
+
 		add_filter( 'wp_is_comment_flood', '__return_false', PHP_INT_MAX );
 		add_filter( 'pre_comment_approved', '__return_true' );
 		generate_with_progress(
@@ -119,7 +121,7 @@ class WooCommerce {
 			function( $i ) use ( $woo_generator, $faker, $product_ids, $assoc_args ) {
 				$review_ids        = [];
 				$number_of_reviews = $faker->numberBetween( $assoc_args['min-reviews'], $assoc_args['max-reviews'] );
-				for ( $i = 0; $i < $number_of_reviews; $i++ ) {
+				for ( $r = 0; $r < $number_of_reviews; $r++ ) {
 					$review_ids[] = $woo_generator->generate_review( $product_ids[ $i ] );
 				}
 				return $review_ids;

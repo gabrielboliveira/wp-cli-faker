@@ -125,8 +125,10 @@ class WooCommerce_Generator {
 			$params['categories'][] = [ 'id' => $this->faker->randomElement( $category_ids ) ];
 		}
 
-		$number_of_brands = $this->faker->numberBetween( 1, 2 );
-		$params['brands'] = $this->faker->randomElements( $brand_ids, $number_of_brands );
+		if (!empty($brand_ids)) {
+			$number_of_brands = $this->faker->numberBetween( 1, 2 );
+			$params['brands'] = $this->faker->randomElements( $brand_ids, $number_of_brands );
+		}
 
 		$request = new \WP_REST_Request( 'POST' );
 		$request->set_body_params( $params );
