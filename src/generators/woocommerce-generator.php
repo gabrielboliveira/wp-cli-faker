@@ -42,11 +42,11 @@ class WooCommerce_Generator {
 
 		$params  = [
 			'product_id'     => $product_id,
-			'review'         => $this->faker->paragraph,
-			'reviewer'       => $this->faker->name,
-			'reviewer_email' => $this->faker->email,
+			'review'         => $this->faker->paragraph(),
+			'reviewer'       => $this->faker->name(),
+			'reviewer_email' => $this->faker->email(),
 			'rating'         => $this->faker->numberBetween( 0, 5 ),
-			'verified'       => $this->faker->boolean,
+			'verified'       => $this->faker->boolean(),
 		];
 		$request = new \WP_REST_Request( 'POST' );
 		$request->set_body_params( $params );
@@ -73,8 +73,8 @@ class WooCommerce_Generator {
 		$controller = new \WC_REST_Product_Categories_Controller();
 
 		$params  = [
-			'name'        => $this->faker->unique()->catchPhrase,
-			'description' => $this->core_generator->generate_post_content( $attachment_ids ),
+			'name'        => $this->faker->unique()->catchPhrase(),
+			'description' => $this->core_generator->generate_post_content( $attachment_ids, 1, 3 ),
 			'image'       => [ 'id' => $this->faker->randomElement( $attachment_ids ) ],
 		];
 		$request = new \WP_REST_Request( 'POST' );
@@ -104,7 +104,7 @@ class WooCommerce_Generator {
 		$controller = new \WC_REST_Products_Controller();
 
 		$params = [
-			'name'          => $this->faker->unique()->catchPhrase,
+			'name'          => $this->faker->unique()->catchPhrase(),
 			'description'   => $this->core_generator->generate_post_content( $attachment_ids ),
 			'status'        => 'publish',
 			'type'          => 'Simple',

@@ -42,14 +42,14 @@ class Core_Generator {
 	public function generate_user( $role = 'author' ) {
 		$author_id = \wp_insert_user(
 			[
-				'user_login'      => $this->faker->unique()->userName,
-				'user_pass'       => $this->faker->password,
-				'user_url'        => $this->faker->url,
-				'user_email'      => $this->faker->email,
-				'first_name'      => $this->faker->firstName,
-				'last_name'       => $this->faker->lastName,
-				'description'     => $this->faker->paragraph,
-				'user_registered' => $this->faker->dateTimeThisCentury->format( 'Y-m-d H:i:s' ),
+				'user_login'      => $this->faker->unique()->userName(),
+				'user_pass'       => $this->faker->password(),
+				'user_url'        => $this->faker->url(),
+				'user_email'      => $this->faker->email(),
+				'first_name'      => $this->faker->firstName(),
+				'last_name'       => $this->faker->lastName(),
+				'description'     => $this->faker->paragraph(),
+				'user_registered' => $this->faker->dateTimeThisCentury()->format( 'Y-m-d H:i:s' ),
 				'role'            => $role,
 			]
 		);
@@ -105,11 +105,11 @@ class Core_Generator {
 	 */
 	public function generate_term( $taxonomy, $parent_ids = [] ) {
 		$category = \wp_insert_term(
-			$this->faker->unique()->catchPhrase,
+			$this->faker->unique()->catchPhrase(),
 			$taxonomy,
 			[
-				'description' => $this->faker->paragraph,
-				'parent'      => ( $this->faker->boolean && count( $parent_ids ) > 0 ) ? $this->faker->randomElement( $parent_ids ) : null,
+				'description' => $this->faker->paragraph(),
+				'parent'      => ( $this->faker->boolean() && count( $parent_ids ) > 0 ) ? $this->faker->randomElement( $parent_ids ) : null,
 			]
 		);
 
@@ -141,11 +141,11 @@ class Core_Generator {
 				'post_author'   => $this->faker->randomElement( $author_ids ),
 				'post_date'     => $date->format( 'Y-m-d H:i:s' ),
 				'post_content'  => $this->generate_post_content( $attachment_ids ),
-				'post_title'    => $this->faker->catchPhrase,
+				'post_title'    => $this->faker->catchPhrase(),
 				'post_type'     => $post_type,
 				'post_status'   => 'publish',
 				'post_parent'   => ( $this->faker->boolean( 25 ) && count( $parent_ids ) > 0 ) ? $this->faker->randomElement( $parent_ids ) : null,
-				'post_modified' => ( ( $this->faker->boolean ) ? $this->faker->dateTimeBetween( $date ) : $date )->format( 'Y-m-d H:i:s' ),
+				'post_modified' => ( ( $this->faker->boolean() ) ? $this->faker->dateTimeBetween( $date ) : $date )->format( 'Y-m-d H:i:s' ),
 				'post_category' => $this->faker->randomElements( $category_ids, $this->faker->numberBetween( 1, 2 ) ),
 				'tags_input'    => $this->faker->randomElements( $tag_ids, $this->faker->numberBetween( 0, 4 ) ),
 				'meta_input'    => $this->generate_custom_fields(),
@@ -173,8 +173,8 @@ class Core_Generator {
 		$block_count = $this->faker->numberBetween( 8, 12 );
 
 		for ( $i = 0; $i < $block_count; $i++ ) {
-			if ( $this->faker->boolean( 90 ) ) {
-				$blocks[] = "<!-- wp:paragraph -->\n<p>" . $this->faker->paragraph . "</p>\n<!-- /wp:paragraph -->";
+			if ( empty( $attachment_ids ) || $this->faker->boolean( 90 ) ) {
+				$blocks[] = "<!-- wp:paragraph -->\n<p>" . $this->faker->paragraph() . "</p>\n<!-- /wp:paragraph -->";
 				continue;
 			}
 
@@ -194,13 +194,13 @@ class Core_Generator {
 	public function generate_custom_fields() {
 		if ( count( self::$custom_field_keys ) === 0 ) {
 			for ( $i = 0; $i < 10; $i++ ) {
-				self::$custom_field_keys[] = self::$custom_field_prefix . $this->faker->word;
+				self::$custom_field_keys[] = self::$custom_field_prefix . $this->faker->word();
 			}
 		}
 
 		$custom_fields = [];
 		foreach ( self::$custom_field_keys as $key ) {
-			$custom_fields[ $key ] = $this->faker->word;
+			$custom_fields[ $key ] = $this->faker->word();
 		}
 
 		return $custom_fields;
