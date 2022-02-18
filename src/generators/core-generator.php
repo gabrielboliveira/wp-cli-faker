@@ -165,12 +165,14 @@ class Core_Generator {
 	 * Generates post content.
 	 *
 	 * @param int[] $attachment_ids The possible attachment ids.
+	 * @param int   $minParagraphs  The minimum amount of paragraphs.
+	 * @param int   $maxParagraphs  The maximum amount of paragraphs.
 	 *
 	 * @return string The post content.
 	 */
-	public function generate_post_content( $attachment_ids ) {
+	public function generate_post_content( $attachment_ids, $minParagraphs = 8, $maxParagraphs = 12 ) {
 		$blocks      = [];
-		$block_count = $this->faker->numberBetween( 8, 12 );
+		$block_count = $this->faker->numberBetween( $minParagraphs, $maxParagraphs );
 
 		for ( $i = 0; $i < $block_count; $i++ ) {
 			if ( empty( $attachment_ids ) || $this->faker->boolean( 90 ) ) {

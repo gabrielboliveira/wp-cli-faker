@@ -35,6 +35,12 @@ class WooCommerce {
 	 * default: 25
 	 * ---
 	 *
+	 * [--tags=<tags>]
+	 * : The number of tags to generate.
+	 * ---
+	 * default: 25
+	 * ---
+	 *
 	 * [--brands=<brands>]
 	 * : The number of brands to generate.
 	 * ---
@@ -90,6 +96,15 @@ class WooCommerce {
 			}
 		);
 
+
+		$tag_ids = generate_with_progress(
+			'product tags',
+			(int) $assoc_args['tags'],
+			function() use ( $woo_generator ) {
+				return $woo_generator->generate_tag();
+			}
+		);
+
 		$brand_ids = [];
 		if ( \taxonomy_exists( 'pwb-brand' ) ) {
 			$brand_ids = generate_with_progress(
@@ -106,12 +121,10 @@ class WooCommerce {
 		$product_ids = generate_with_progress(
 			'product',
 			(int) $assoc_args['products'],
-			function() use ( $woo_generator, $attachment_ids, $category_ids, $brand_ids ) {
-				return $woo_generator->generate_product( $attachment_ids, $category_ids, $brand_ids );
+			function() use ( $woo_generator, $attachment_ids, $category_ids, $tag_ids, $brand_ids ) {
+				return $woo_generator->generate_product( $attachment_ids, $category_ids, $tag_ids, $brand_ids );
 			}
 		);
-
-		error_log( __METHOD__ . ':' . __LINE__ .') : '. print_r( $product_ids, true ) );
 
 		add_filter( 'wp_is_comment_flood', '__return_false', PHP_INT_MAX );
 		add_filter( 'pre_comment_approved', '__return_true' );

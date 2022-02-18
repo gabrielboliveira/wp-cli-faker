@@ -90,17 +90,44 @@ class WooCommerce_Generator {
 	}
 
 	/**
+	 * Generates a product tag
+	 *
+	 * @return int The product tag id.
+	 *
+	 * @throws Exception If the product tag could not be saved.
+	 */
+	public function generate_tag() {
+		$controller = new \WC_REST_Product_Tags_Controller();
+
+		$params  = [
+			'name'        => $this->faker->unique()->catchPhrase(),
+			'description' => $this->core_generator->generate_post_content( [], 1, 3 ),
+		];
+		$request = new \WP_REST_Request( 'POST' );
+		$request->set_body_params( $params );
+
+		$response = $controller->create_item( $request );
+
+		if ( \is_wp_error( $response ) ) {
+			throw new Exception( $response->get_error_message() );
+		}
+
+		return $response->data['id'];
+	}
+
+	/**
 	 * Generates a product
 	 *
 	 * @param int[] $attachment_ids The possible attachment ids.
 	 * @param int[] $category_ids   The possible category ids.
+	 * @param int[] $tag_ids        The possible tag ids.
 	 * @param int[] $brand_ids      The possible brand ids.
 	 *
 	 * @return int The product id.
 	 *
 	 * @throws Exception If the product could not be saved.
 	 */
-	public function generate_product( $attachment_ids, $category_ids, $brand_ids ) {
+	public function generate_product( $attachment_ids, $category_ids, $tag_ids, $brand_ids ) {
 		$controller = new \WC_REST_Products_Controller();
 
 		$params = [
@@ -109,24 +136,38 @@ class WooCommerce_Generator {
 			'status'        => 'publish',
 			'type'          => 'Simple',
 			'featured'      => $this->faker->boolean( 10 ),
-			'sku'           => $this->faker->numerify( '######' ),
+			'sku'           => strtoupper( $this->faker->unique()->numerify( $this->faker->lexify( $this->faker->shuffle( '#?#?#?#?#?#?' ) ) ) ),
 			'regular_price' => $this->faker->numberBetween( 10, 100 ),
 			'images'        => [],
 			'categories'    => [],
 		];
 
-		$number_of_images = $this->faker->numberBetween( 1, 3 );
-		for ( $i = 0; $i < $number_of_images; $i++ ) {
-			$params['images'][] = [ 'id' => $this->faker->randomElement( $attachment_ids ) ];
+		if ( ! empty( $attachment_ids ) ) {
+			$number_of_images = $this->faker->numberBetween( 1, min( count( $attachment_ids ), 3 ) );
+
+			for ( $i = 0; $i < $number_of_images; $i++ ) {
+				$params['images'][] = [ 'id' => $this->faker->randomElement( $attachment_ids ) ];
+			}
 		}
 
-		$number_of_categories = $this->faker->numberBetween( 1, 2 );
-		for ( $i = 0; $i < $number_of_categories; $i++ ) {
-			$params['categories'][] = [ 'id' => $this->faker->randomElement( $category_ids ) ];
+		if ( ! empty( $category_ids ) ) {
+			$number_of_categories = $this->faker->numberBetween( 1, min( count( $category_ids ), 2 ) );
+
+			for ( $i = 0; $i < $number_of_categories; $i++ ) {
+				$params['categories'][] = [ 'id' => $this->faker->randomElement( $category_ids ) ];
+			}
 		}
 
-		if (!empty($brand_ids)) {
-			$number_of_brands = $this->faker->numberBetween( 1, 2 );
+		if ( ! empty( $tag_ids ) ) {
+			$number_of_tags = $this->faker->numberBetween( 1, min( count( $tag_ids ), 3 ) );
+
+			for ( $i = 0; $i < $number_of_tags; $i++ ) {
+				$params['tags'][] = [ 'id' => $this->faker->randomElement( $tag_ids ) ];
+			}
+		}
+
+		if ( ! empty( $brand_ids ) ) {
+			$number_of_brands = $this->faker->numberBetween( 1, min( count( $brand_ids ), 2 ) );
 			$params['brands'] = $this->faker->randomElements( $brand_ids, $number_of_brands );
 		}
 
